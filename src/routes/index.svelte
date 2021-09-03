@@ -1,6 +1,25 @@
+<script context="module">
+    export async function load({page}) {
+    const url = `https://pokeapi.co/api/v2/pokemon?offset=300&limit=${num}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const loadedPokemon = data.results.map((data, index) => {
+        return {
+            name: data.name,
+            id: index + 1,
+            image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+			index + 1
+		}.png` 
+        };
+    });
+    return {props: { pokemon: loadedPokemon}}
+    }
+</script>
+
 <script>
-    import { pokemon } from "../stores/pokestore";
+    //import { pokemon } from "../stores/pokestore";
     import PokemanCard from "../components/PokemanCard.svelte";
+    export let pokemon;
     
     let searchTerm = "";
     let filteredPokemon = [];
@@ -8,9 +27,12 @@
     $: {
         console.log(searchTerm);
         if(searchTerm) {
-            filteredPokemon = $pokemon.filter(pokeman => pokeman.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            //Removing the $ because now we are using an SSR call instead of a store
+            //filteredPokemon = $pokemon.filter(pokeman => pokeman.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            filteredPokemon = pokemon.filter(pokeman => pokeman.name.toLowerCase().includes(searchTerm.toLowerCase()));
         } else {
-            filteredPokemon = [...$pokemon]
+            //filteredPokemon = [...$pokemon]
+            filteredPokemon = [...pokemon]
         }
     }
 
